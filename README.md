@@ -56,13 +56,13 @@ The -R flag, when used, instructs the software to dump the "per channel"
 data - provided some DAB data is found in that channel - into a file.
 The filename will be generated, and consists of the following elements
 
-	channelName EnsembleIdentification Data. sdr
+	channelName EnsembleIdentification Data. uff
 
 Example
 
-	'12C 8001 2020-09-18 10:16:49.sdr'
+	'12C 8001 2020-09-18 10:16:49.uff'
 
-indicates that a file with raw data (in ".sdr" format) is written
+indicates that a file with raw data (in ".uff" format) is written
 on the date as specified, where the input was from channel "12C",
 with the Ensemble Identification 0x8001.
 

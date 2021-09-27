@@ -147,8 +147,9 @@ int16_t		GRdB		= 30;
 int16_t		lnaState	= 4;
 bool		autogain	= false;
 int16_t		ppmOffset	= 0;
+int		deviceIndex	= 0;
 const char	*deviceString	= "Compiled for SDRPlay (2.13 library)";
-const char	*optionsString	= "O:RF:T:D:d:M:B:C:G:L:Qp:";
+const char	*optionsString	= "O:RF:T:D:d:M:B:C:G:L:QI:p:";
 #elif	HAVE_AIRSPY
 int16_t		gain		= 20;
 bool		autogain	= false;
@@ -277,6 +278,10 @@ RingBuffer<std::complex<float>> _I_Buffer (16 * 32768);
 	         ppmOffset	= atoi (optarg);
 	         break;
 
+	      case 'I':
+	         deviceIndex	= atoi (optarg);
+	         break;
+
 #elif	HAVE_RTLSDR
 	      case 'G':
 	         gain		= atoi (optarg);
@@ -352,7 +357,7 @@ RingBuffer<std::complex<float>> _I_Buffer (16 * 32768);
 	                                      GRdB,
 	                                      lnaState,
 	                                      autogain,
-	                                      0,
+	                                      deviceIndex,
 	                                      0);
 #elif	HAVE_AIRSPY
 	   theDevice	= new airspyHandler (&_I_Buffer,
@@ -593,6 +598,7 @@ void    printOptions (void) {
 "	                  -G Gain reduction in dB (range 20 .. 59)\n"
 "	                  -L lnaState (depends on model chosen)\n"
 "	                  -Q autogain (default off)\n"
+"	                  -I device index (default 0)\n"
 "	for AIRSPY:\n"
 "	                  -G number\t	gain, range 1 .. 21\n"
 "	                  -b set rf bias\n"

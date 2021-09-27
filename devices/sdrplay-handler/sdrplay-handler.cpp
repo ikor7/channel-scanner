@@ -48,7 +48,7 @@ int	maxlna;
 	if ((GRdB < 20) || (GRdB > 59))
 	   GRdB = 30;
 	this	-> lnaState		= lnaState;
-        this    -> deviceIndex          = deviceIndex;
+	this    -> deviceIndex          = deviceIndex;
         this    -> agcMode		= autoGain ?
 	                                     mir_sdr_AGC_100HZ :
 	                                     mir_sdr_AGC_DISABLE;
@@ -67,13 +67,19 @@ int	maxlna;
 	   throw (25);
 	}
 
-	if (deviceIndex >= numofDevs)
+	if (this -> deviceIndex >= numofDevs)
 	   this -> deviceIndex = 0;
-	hwVersion = devDesc [deviceIndex]. hwVer;
+	hwVersion = devDesc [this -> deviceIndex]. hwVer;
 	fprintf (stderr, "sdrdevice found = %s, hw Version = %d\n",
 	                              devDesc [deviceIndex]. SerNo, hwVersion);
-	mir_sdr_SetDeviceIdx (deviceIndex);
+	err =  mir_sdr_SetDeviceIdx (this -> deviceIndex);
+	if (err != mir_sdr_Success) {
+	   fprintf (stderr, " %s %d fails\n",
+	                devDesc [deviceIndex]. SerNo, hwVersion);
+	   throw (17);
+	}
 
+	fprintf (stderr, "deviceIndex %d success\n", this -> deviceIndex);
 	if (hwVersion == 2) {
 	   if (antenna == 0) {
 	      err = mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_A);
@@ -226,9 +232,11 @@ std::string	sdrplayHandler::deviceName	() {
 }
 
 void	sdrplayHandler::startDumping	(const std::string &fileName) {
+std::string theName = fileName + "_" + std::to_string (deviceIndex);
         xmlFile	= fopen (fileName. c_str (), "w");
 	if (xmlFile == nullptr)
 	   return;
+
 	
 	xmlWriter	= new xml_fileWriter (xmlFile,
 	                                      nrBits,
