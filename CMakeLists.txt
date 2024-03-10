@@ -167,12 +167,12 @@ endif ()
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./devices/sdrplay-handler-v2/sdrplay-handler.h
+	        ./devices/sdrplay-handler-v2/sdrplay-handler-v2.h
            )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./devices/sdrplay-handler-v2/sdrplay-handler.cpp
+	        ./devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp
 	   )
 
 	   add_definitions (-DHAVE_SDRPLAY_V2)

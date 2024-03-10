@@ -91,5 +91,4 @@ private:
 
         FILE            *xmlFile;
 };
-#endif
 
