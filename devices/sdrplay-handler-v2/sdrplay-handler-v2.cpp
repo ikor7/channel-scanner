@@ -21,11 +21,12 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include	"sdrplay-handler.h"
+#include	"sdrplay-handler-v2.h"
 #include	"xml-filewriter.h"
 #include	<unistd.h>
 
-	sdrplayHandler::sdrplayHandler  (RingBuffer<std::complex<float>> *b,
+	sdrplayHandler_v2::
+	             sdrplayHandler_v2  (RingBuffer<std::complex<float>> *b,
 	                                 const std::string &recorderVersion,
 	                                 int32_t	frequency,
 	                                 int16_t	ppm,
@@ -132,7 +133,7 @@ int	maxlna;
 	running. store (false);
 }
 
-	sdrplayHandler::~sdrplayHandler	(void) {
+	sdrplayHandler_v2::~sdrplayHandler_v2	() {
 	stopReader ();
 	if (numofDevs > 0)
 	   mir_sdr_ReleaseDeviceIdx ();
@@ -150,7 +151,7 @@ void myStreamCallback (int16_t		*xi,
 	               uint32_t		hwRemoved,
 	               void		*cbContext) {
 int16_t	i;
-sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
+sdrplayHandler_v2	*p = static_cast<sdrplayHandler_v2 *> (cbContext);
 std::complex<float> localBuf [numSamples];
 std::complex<int16_t> dumpBuf [numSamples];
 float	denominator		= p -> denominator;
@@ -180,7 +181,7 @@ void	myGainChangeCallback (uint32_t	gRdB,
 	(void)cbContext;
 }
 
-bool	sdrplayHandler::restartReader	(int32_t frequency) {
+bool	sdrplayHandler_v2::restartReader	(int32_t frequency) {
 int	gRdBSystem;
 int	samplesPerPacket;
 mir_sdr_ErrT	err;
@@ -214,7 +215,7 @@ int	localGRed	= GRdB;
         return true;
 }
 
-void	sdrplayHandler::stopReader	(void) {
+void	sdrplayHandler_v2::stopReader	() {
 	if (!running. load ())
 	   return;
 
@@ -223,15 +224,15 @@ void	sdrplayHandler::stopReader	(void) {
 	running. store (false);
 }
 
-int16_t	sdrplayHandler::bitDepth	() {
+int16_t	sdrplayHandler_v2::bitDepth	() {
 	return nrBits;
 }
 
-std::string	sdrplayHandler::deviceName	() {
+std::string	sdrplayHandler_v2::deviceName	() {
 	return "SDRplay";
 }
 
-void	sdrplayHandler::startDumping	(const std::string &fileName) {
+void	sdrplayHandler_v2::startDumping	(const std::string &fileName) {
 std::string theName = fileName + "_" + std::to_string (deviceIndex);
         xmlFile	= fopen (fileName. c_str (), "w");
 	if (xmlFile == nullptr)
@@ -249,7 +250,7 @@ std::string theName = fileName + "_" + std::to_string (deviceIndex);
 	dumping. store (true);
 }
 
-void	sdrplayHandler::stopDumping	() {
+void	sdrplayHandler_v2::stopDumping	() {
 	if (!dumping. load ())
 	   return;
 	if (xmlFile == nullptr)	// this can happen !!

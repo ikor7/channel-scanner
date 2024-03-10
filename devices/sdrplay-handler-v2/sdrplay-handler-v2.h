@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __SDRPLAY_HANDLER__
-#define	__SDRPLAY_HANDLER__
+#pragma one
 
 #include	<dlfcn.h>
 #include	<atomic>
@@ -49,9 +48,9 @@ typedef	void	(*mir_sdr_GainChangeCallback_t)(uint32_t	gRdB,
 	                                        void		*cbContext);
 
 ///////////////////////////////////////////////////////////////////////////
-class	sdrplayHandler: public deviceHandler {
+class	sdrplayHandler_v2: public deviceHandler {
 public:
-		sdrplayHandler          (RingBuffer<std::complex<float>> *,
+		sdrplayHandler_v2       (RingBuffer<std::complex<float>> *,
 	                                 const std::string &,
 	                                 int32_t        frequency,
 	                                 int16_t        ppmCorrection,
@@ -61,7 +60,7 @@ public:
 	                                 uint16_t       deviceIndex,
 	                                 int16_t        antenna);
 
-		~sdrplayHandler		(void);
+		~sdrplayHandler_v2	();
 
 	bool	restartReader		(int32_t);
 	void	stopReader		(void);

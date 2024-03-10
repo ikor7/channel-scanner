@@ -50,10 +50,10 @@ int	i;
 	running. store (true);
 }
 
-	sampleReader::~sampleReader (void) {
+	sampleReader::~sampleReader () {
 }
 
-void	sampleReader::reset	(void) {
+void	sampleReader::reset	() {
 	currentPhase            = 0;
 	sLevel                  = 0;
 	sampleCount             = 0;

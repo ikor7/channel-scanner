@@ -24,8 +24,7 @@
  *	want the interface with different devices (including  filehandling)
  *	to be transparent
  */
-#ifndef	__DEVICE_HANDLER__
-#define	__DEVICE_HANDLER__
+#pragma once
 
 #include	<stdint.h>
 #include	<complex>
@@ -36,12 +35,12 @@ using namespace std;
 class	deviceHandler {
 public:
 			deviceHandler 	(RingBuffer<std::complex<float>> *);
-virtual			~deviceHandler 	(void);
+virtual			~deviceHandler 	();
 virtual		bool	restartReader	(int32_t);
-virtual		void	stopReader	(void);
+virtual		void	stopReader	();
 virtual		void	startDumping	(const std::string &);
 virtual		void	stopDumping	();
-virtual		int16_t	bitDepth	(void) { return 10;}
+virtual		int16_t	bitDepth	() { return 12;}
 virtual		std::string deviceName	();
 		std::string	toHex	(uint32_t);
 //
@@ -50,7 +49,6 @@ protected:
 		int32_t	vfoFrequency;
 	        int32_t	vfoOffset;
 	        int	theGain;
-virtual		void	run		(void);
+virtual		void	run		();
 };
-#endif
 

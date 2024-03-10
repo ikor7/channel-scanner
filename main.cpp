@@ -37,7 +37,9 @@
 #ifdef	HAVE_PLUTO
 #include	"pluto-handler.h"
 #elif	HAVE_SDRPLAY_V2
-#include	"sdrplay-handler.h"
+#include	"sdrplay-handler-v2.h"
+#elif	HAVE_SDRPLAY_V3
+#include	"sdrplay-handler-v3.h"
 #elif	HAVE_RTLSDR
 #include	"rtlsdr-handler.h"
 #elif	HAVE_AIRSPY
@@ -149,6 +151,14 @@ bool		autogain	= false;
 int16_t		ppmOffset	= 0;
 int		deviceIndex	= 0;
 const char	*deviceString	= "Compiled for SDRPlay (2.13 library)";
+const char	*optionsString	= "O:RF:T:D:d:M:B:C:G:L:QI:p:";
+#elif	HAVE_SDRPLAY_V3
+int16_t		GRdB		= 30;
+int16_t		lnaState	= 4;
+bool		autogain	= false;
+int16_t		ppmOffset	= 0;
+int		deviceIndex	= 0;
+const char	*deviceString	= "Compiled for SDRPlay (3.X library)";
 const char	*optionsString	= "O:RF:T:D:d:M:B:C:G:L:QI:p:";
 #elif	HAVE_AIRSPY
 int16_t		gain		= 20;
@@ -282,6 +292,27 @@ RingBuffer<std::complex<float>> _I_Buffer (16 * 32768);
 	         deviceIndex	= atoi (optarg);
 	         break;
 
+#elif	HAVE_SDRPLAY_V3
+	      case 'G':
+	         GRdB		= atoi (optarg);
+	         break;
+
+	      case 'L':
+	         lnaState	= atoi (optarg);
+	         break;
+
+	      case 'Q':
+	         autogain	= true;
+	         break;
+
+	      case 'p':
+	         ppmOffset	= atoi (optarg);
+	         break;
+
+	      case 'I':
+	         deviceIndex	= atoi (optarg);
+	         break;
+
 #elif	HAVE_RTLSDR
 	      case 'G':
 	         gain		= atoi (optarg);
@@ -350,15 +381,25 @@ RingBuffer<std::complex<float>> _I_Buffer (16 * 32768);
 	int32_t frequency	= MHz (220);	// just a dummy value
 	try {
 #ifdef	HAVE_SDRPLAY_V2
-	   theDevice	= new sdrplayHandler (&_I_Buffer,
-	                                      std::string ("2"),
-	                                      frequency,
-	                                      ppmOffset,
-	                                      GRdB,
-	                                      lnaState,
-	                                      autogain,
-	                                      deviceIndex,
-	                                      0);
+	   theDevice	= new sdrplayHandler_v2 (&_I_Buffer,
+	                                         std::string ("2"),
+	                                         frequency,
+	                                         ppmOffset,
+	                                         GRdB,
+	                                         lnaState,
+	                                         autogain,
+	                                         deviceIndex,
+	                                         0);
+#elif	HAVE_SDRPLAY_V3
+	   theDevice	= new sdrplayHandler_v3 (&_I_Buffer,
+	                                         std::string ("2"),
+	                                         frequency,
+	                                         ppmOffset,
+	                                         GRdB,
+	                                         lnaState,
+	                                         autogain,
+	                                         deviceIndex,
+	                                         0);
 #elif	HAVE_AIRSPY
 	   theDevice	= new airspyHandler (&_I_Buffer,
 	                                     std::string ("2"),
@@ -505,7 +546,7 @@ dabProcessor theRadio (_I_Buffer,
 	run. store (true);
 
 	for (int i = 0; i < duration; i ++) {
-	   fprintf (stderr, "we sleep\n");
+//	   fprintf (stderr, "we sleep\n");
 	   sleep (1);
 	   avg_snr	+= theRadio. get_snr ();
 	   int tii	= theRadio. get_tiiData ();

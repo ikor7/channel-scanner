@@ -71,7 +71,7 @@ void	dabProcessor::start	(void) {
 	threadHandle	= std::thread (&dabProcessor::run, this);
 }
 
-void	dabProcessor::run	(void) {
+void	dabProcessor::run	() {
 std::complex<float>	FreqCorr;
 timeSyncer      myTimeSyncer (&myReader);
 int32_t		i;

@@ -1,6 +1,9 @@
 cmake_minimum_required( VERSION 2.8.11 )
 set (objectName dab_channelScanner)
 #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -flto")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 #set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11  -g")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -g")
@@ -28,7 +31,8 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 ######################################################################
 #
 ########################################################################
-OPTION(SDRPLAY  "Input: SDRPLAY"  OFF)
+OPTION(SDRPLAY  "Input: SDRPLAY_V2"  OFF)
+OPTION(SDRPLAY  "Input: SDRPLAY_v3"  OFF)
 OPTION(PLUTO	"Input: PLUTO"	  OFF)
 OPTION(PLUTO	"Input: RTLSDR"	  OFF)
 OPTION(AIRSPY	"Input: AIRSPY"	  OFF)
@@ -38,17 +42,26 @@ OPTION(X64_DEFINED "optimize for x64/SSE"  OFF)
 OPTION(RPI_DEFINED "optimize for ARM/NEON" OFF)
 
 
-if ( (NOT SDRPLAY) AND (NOT PLUTO) AND (NOT RTLSDR) AND (NOT AIRSPY) AND
-     (NOT HACKRF) AND (NOT LIMESDR))
+if ( (NOT SDRPLAY_V2) AND (NOT SDRPLAY_V3) AND (NOT PLUTO) AND
+(NOT RTLSDR) AND (NOT AIRSPY) AND (NOT HACKRF) AND (NOT LIMESDR))
    message("None of the Input Options selected. Using default SDRPLAY")
-   set(SDRPLAY ON)
+   set(SDRPLAY_V2 ON)
 endif ()
 
 set (objectName "")
 
-if(SDRPLAY)
+if(SDRPLAY_V2)
    if (objectName STREQUAL "")
       set(SDRPLAY_V2 ON)
+      set(objectName sdrplay-channelScanner)
+   else ()
+      message ("Ignoring second option")
+   endif ()
+endif ()
+
+if(SDRPLAY_V3)
+   if (objectName STREQUAL "")
+      set(SDRPLAY_V3 ON)
       set(objectName sdrplay-channelScanner)
    else ()
       message ("Ignoring second option")
@@ -149,22 +162,53 @@ endif ()
            endif(NOT(SDRPLAYLIB))
 
 	   include_directories (
-	     ./devices/sdrplay-handler
+	     ./devices/sdrplay-handler-v2
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./devices/sdrplay-handler/sdrplay-handler.h
+	        ./devices/sdrplay-handler-v2/sdrplay-handler.h
            )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./devices/sdrplay-handler/sdrplay-handler.cpp
+	        ./devices/sdrplay-handler-v2/sdrplay-handler.cpp
 	   )
 
 	   add_definitions (-DHAVE_SDRPLAY_V2)
 	endif (SDRPLAY_V2)
 
+	if (SDRPLAY_V3)
+	   find_path (SDRPLAYLIB_INCLUDE_DIR
+                      NAMES sdrplay_api.h
+                      PATHS
+                      /usr/local/include/
+	   )
+           include_directories (${SDRPLAYLIB_INCLUDE_DIR})
+
+           find_library (SDRPLAYLIB sdrplay_api)
+           if(NOT(SDRPLAYLIB))
+              message(FATAL_ERROR "please install -lsdrplay_api")
+           else(NOT(SDRPLAYLIB))
+              list (APPEND extraLibs ${SDRPLAYLIB})
+           endif(NOT(SDRPLAYLIB))
+
+	   include_directories (
+	     ./devices/sdrplay-handler-v3
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices/sdrplay-handler-v3/sdrplay-handler-v3.h
+           )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp
+	   )
+
+	   add_definitions (-DHAVE_SDRPLAY_V3)
+	endif (SDRPLAY_V3)
 
 	if (RTLSDR)
            find_package(LibRTLSDR)
