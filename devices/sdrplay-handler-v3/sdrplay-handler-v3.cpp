@@ -300,7 +300,6 @@ int			lna_upperBound;
 	      lna_upperBound	= 26;
 	      denominator	= 2048.0;
 	      nrBits		= 14;
-	      deviceModel	= "RspDx";
 	      deviceModel	= hwVersion == 4 ? "RspDx" : "RspDxR2";
 	      break;
 	   default:
